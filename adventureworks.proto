@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package adventureWorks;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+message Order {
+	int32 sales_order_id = 1;
+	string sales_order_number = 2;
+	string purchase_order_number = 3;
+	google.protobuf.Timestamp order_date = 4;
+	google.protobuf.Timestamp ship_date = 5;
+	bool is_online_order = 6;
+	double sub_total = 7;
+	double total_due = 8;
+	repeated Product products = 9;
+	Customer customer = 10;
+	CreditCard credit_card = 11;
+}
+
+message Product {
+	int32 product_id = 1;
+	string name = 2;
+	string product_number = 3;
+	string color = 4;
+	double standard_cost = 5;
+	double list_price = 6;
+	string size = 7;
+	double weigh = 8;
+}
+
+message Customer {
+	string first_name = 1;
+	string middle_name = 2;
+	string last_name = 3;
+	string account_number = 4;
+}
+
+message CreditCard {
+	int64 card_number = 1;
+	int32 exp_month = 2;
+	int32 exp_year = 3;
+}
+
+message OrderRequest {
+	int32 sales_order_id = 1;
+}
+
+message OrderResponse {
+	Order order = 1;
+}
+
+service OrderService {
+	rpc Get(OrderRequest) returns (OrderResponse) {}
+}

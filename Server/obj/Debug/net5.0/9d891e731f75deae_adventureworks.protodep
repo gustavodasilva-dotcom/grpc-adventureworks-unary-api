@@ -1,0 +1,4 @@
+Models/Grpc/Adventureworks.cs \
+Models/Grpc/AdventureworksGrpc.cs: C:/Users/gusta/.nuget/packages/grpc.tools/2.45.0/build/native/include/google/protobuf/duration.proto\
+ C:/Users/gusta/.nuget/packages/grpc.tools/2.45.0/build/native/include/google/protobuf/timestamp.proto\
+ ../adventureworks.proto

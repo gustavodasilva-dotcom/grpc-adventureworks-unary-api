@@ -1,0 +1,5 @@
+# grpc-adventureworks-unary-api
+
+- EN: I'm learning how to develop APIs using gRPC with C#. In order to practice (especially developing unary APIs, which are the most common), I developed this little project. It is a microservice that, when has its Get method called, returns the data from an order. It is not perfect -- there's some stuff that, for sure, could be better (and it will be, once a figure out how to make it better), but, for right now, I think it was a good practice.
+
+- PT-BR: Estou aprendendo como desenvolver APIs utilizando gRPC com C#. Para praticar (especialmente desenvolver APIs com consultas unitárias, que são as mais comuns), eu desenvolvi este pequeno projeto. É um microsserviço que, quando tem seu método Get chamado, retorna os dados de um pedido. Não é perfeito -- há algumas coisas que, com certeza, podem ser melhoradas (e serão, assim que eu descobrir como melhorá-las), mas, por enquanto, acredito que foi um bom treino.
