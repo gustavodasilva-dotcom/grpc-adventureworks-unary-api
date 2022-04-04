@@ -6,6 +6,8 @@ namespace Server
     {
         static void Main(string[] args)
         {
+            #region Main
+
             var _port = int.Parse(ConfigurationManager.AppSettings["port"]);
             var _host = ConfigurationManager.AppSettings["host"];
 
@@ -35,6 +37,8 @@ namespace Server
             {
                 if (server != null) server.ShutdownAsync().Wait();
             }
+
+            #endregion
         }
     }
 }

@@ -1,9 +1,12 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 
 namespace Client
 {
     class Program
     {
+        #region Main
+
         static void Main(string[] args)
         {
             var target = ConfigurationManager.AppSettings["target"];
@@ -15,11 +18,11 @@ namespace Client
                 channel.ConnectAsync().ContinueWith(t =>
                 {
                     if (t.Status == System.Threading.Tasks.TaskStatus.RanToCompletion)
-                        System.Console.WriteLine($"Connected successufully at the target {target}.");
+                        Console.WriteLine($"Connected successufully at the target {target}.");
                 });
 
-                System.Console.WriteLine("Please, inform the order ID:");
-                var userInput = System.Console.ReadLine();
+                Console.WriteLine("Please, inform the order ID:");
+                var userInput = Console.ReadLine();
 
                 if (int.TryParse(userInput, out int orderID))
                 {
@@ -29,22 +32,37 @@ namespace Client
                     });
 
                     var client = new AdventureWorks.OrderService.OrderServiceClient(channel);
-                    var response = client.Get(request);
+                    
+                    try
+                    {
+                        var response = client.Get(request, deadline: DateTime.UtcNow.AddSeconds(1));
 
-                    if (response.Order != null)
-                        System.Console.WriteLine($"Order info: {response}");
-                    else
-                        System.Console.WriteLine($"The order {orderID} does not exists.");
+                        if (response.Order != null)
+                            Console.WriteLine($"Order info: {response}");
+                        else
+                            Console.WriteLine($"The order {orderID} does not exists.");
+                    }
+                    catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.DeadlineExceeded)
+                    {
+                        Console.WriteLine(e.Status.Detail);
+                    }
                 }
                 else
-                    System.Console.WriteLine($"The {userInput} is not numeric.");
+                    Console.WriteLine($"The {userInput} is not numeric.");
 
-                System.Console.ReadKey();
+                Console.ReadKey();
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
-                System.Console.WriteLine($"The following error occurred: {e.Message}");
+                Console.WriteLine($"The following error occurred: {e.Message}");
+            }
+            finally
+            {
+                if (channel != null) channel.ShutdownAsync().Wait();
+                Console.WriteLine("Channel shutted down.");
             }
         }
+
+        #endregion
     }
 }

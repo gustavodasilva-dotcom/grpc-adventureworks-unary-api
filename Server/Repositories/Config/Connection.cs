@@ -8,9 +8,15 @@ namespace Server.Repositories.Config
 {
     public class Connection
     {
+        #region Properties
+
         private readonly int _Timeout;
 
         private readonly SqlConnection _sqlConnection;
+
+        #endregion
+
+        #region Constructor
 
         public Connection()
         {
@@ -18,6 +24,10 @@ namespace Server.Repositories.Config
 
             _sqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["Default"].ConnectionString);
         }
+
+        #endregion
+
+        #region Methods
 
         private async Task<SqlConnection> ConectarAsync()
         {
@@ -59,5 +69,7 @@ namespace Server.Repositories.Config
 
             return await connection.QueryFirstOrDefaultAsync<T>(query, commandTimeout: _Timeout);
         }
+
+        #endregion
     }
 }

@@ -5,6 +5,8 @@ namespace Server.Repositories.Models
 {
     public class OrderRepository : Config.Connection
     {
+        #region Methods
+
         public async Task<Server.Models.Entities.SalesOrderHeader> GetSalesOrderHeaderAsync(int salesOrderID)
         {
             #region SQL
@@ -130,5 +132,7 @@ namespace Server.Repositories.Models
                 return null;
             }
         }
+
+        #endregion
     }
 }
