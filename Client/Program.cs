@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Configuration;
+using Grpc.Core;
 
 namespace Client
 {
@@ -9,16 +11,17 @@ namespace Client
 
         static void Main(string[] args)
         {
-            var target = ConfigurationManager.AppSettings["target"];
-
-            var channel = new Grpc.Core.Channel(target, Grpc.Core.ChannelCredentials.Insecure);
+            var credentials = SslSecurity();
+            var host = ConfigurationManager.AppSettings["host"];
+            var port = int.Parse(ConfigurationManager.AppSettings["port"]);
+            var channel = new Channel(host, port, credentials);
 
             try
             {
                 channel.ConnectAsync().ContinueWith(t =>
                 {
                     if (t.Status == System.Threading.Tasks.TaskStatus.RanToCompletion)
-                        Console.WriteLine($"Connected successufully at the target {target}.");
+                        Console.WriteLine($"Connected successufully at the target {host}:{port}.");
                 });
 
                 Console.WriteLine("Please, inform the order ID:");
@@ -35,14 +38,14 @@ namespace Client
                     
                     try
                     {
-                        var response = client.Get(request, deadline: DateTime.UtcNow.AddSeconds(1));
+                        var response = client.Get(request, deadline: DateTime.UtcNow.AddSeconds(3));
 
                         if (response.Order != null)
                             Console.WriteLine($"Order info: {response}");
                         else
                             Console.WriteLine($"The order {orderID} does not exists.");
                     }
-                    catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.DeadlineExceeded)
+                    catch (RpcException e) when (e.StatusCode == StatusCode.DeadlineExceeded)
                     {
                         Console.WriteLine(e.Status.Detail);
                     }
@@ -61,6 +64,30 @@ namespace Client
                 if (channel != null) channel.ShutdownAsync().Wait();
                 Console.WriteLine("Channel shutted down.");
             }
+        }
+
+        #endregion
+
+        #region SSL
+
+        private static SslCredentials SslSecurity()
+        {
+            SslCredentials channelCredentials = null;
+
+            try
+            {
+                var clientCert = File.ReadAllText(@"Ssl/client.crt");
+                var clientKey = File.ReadAllText(@"Ssl/client.key");
+                var caCrt = File.ReadAllText(@"Ssl/ca.crt");
+
+                if (channelCredentials == null) channelCredentials = new SslCredentials(caCrt, new KeyCertificatePair(clientCert, clientKey));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"An error occurred: {e.Message}");
+            }
+
+            return channelCredentials;
         }
 
         #endregion
